@@ -1,0 +1,100 @@
+-------------------------------------------
+-- Measure: [Top 3 Product Sales Calculate]
+-------------------------------------------
+MEASURE 'Ranking'[Top 3 Product Sales Calculate] = 
+    // iterate through the table to find the top 3 sales for each product and then add them up
+    // can use then as pareto
+    CALCULATE(
+        [£ Total Sales],
+        TOPN(
+            3,
+            VALUES( 'Products'[Product Name] ),
+            [£ Total Sales], DESC
+        )
+    )
+    Description = "Expression:
+
+// iterate through the table to find the top 3 sales for each product and then add them up
+// can use then as pareto
+CALCULATE([£ Total Sales],
+    TOPN(3, VALUES(Products[Product Name]), [£ Total Sales], DESC ))"
+
+---------------------------------
+-- Measure: [Top 3 Product Sales]
+---------------------------------
+MEASURE 'Ranking'[Top 3 Product Sales] = 
+    // iterate through the table to find the top 3 sales for each product and then add them up
+    // can use then as pareto
+    SUMX(
+        TOPN(
+            3,
+            VALUES( 'Products'[Product Name] ),
+            [£ Total Sales], DESC
+        ),
+        [£ Total Sales]
+    )
+    Description = "Expression:
+
+// iterate through the table to find the top 3 sales for each product and then add them up
+// can use then as pareto
+SUMX(
+    TOPN(3, VALUES(Products[Product Name]), [£ Total Sales], DESC ),
+    [£ Total Sales])"
+
+--------------------------------------
+-- Measure: [Top 3 Customers per City]
+--------------------------------------
+MEASURE 'Ranking'[Top 3 Customers per City] = 
+    CALCULATE(
+        [£ Total Sales],
+        TOPN(
+            3,
+            ALL( 'Customers'[Customer Names] ),
+            [£ Total Sales], DESC
+        ),
+        VALUES( 'Customers'[Customer Names] )
+    )
+    Description = "Expression:
+
+CALCULATE([£ Total Sales],
+TOPN( 3, ALL(Customers[Customer Names]), [£ Total Sales], DESC),
+VALUES(Customers[Customer Names]))"
+    FormatString = """£""#,0;-""£""#,0;""£""#,0"
+
+-----------------------------
+-- Measure: [RankX Example 3]
+-----------------------------
+MEASURE 'Ranking'[RankX Example 3] = 
+    RANKX(
+        CROSSJOIN(
+            ALL( 'Customers'[Customer Names] ),
+            ALL( 'Products'[Product Name] )
+        ),
+        [£ Total Sales],
+        ,
+        DESC
+    )
+    Description = "Expression:
+
+RANKX(
+    CROSSJOIN(ALL(Customers[Customer Names]), ALL(Products[Product Name])),
+    [£ Total Sales],,DESC)"
+    FormatString = "0"
+
+-----------------------------
+-- Measure: [RankX Example 2]
+-----------------------------
+MEASURE 'Ranking'[RankX Example 2] = IF( [RankX Example] <= 5, [RankX Example] )
+    Description = "Expression:
+
+IF([RankX Example] <= 5, [RankX Example])"
+    FormatString = "0"
+
+---------------------------
+-- Measure: [RankX Example]
+---------------------------
+MEASURE 'Ranking'[RankX Example] = RANKX( ALL( 'Customers' ), [£ Total Sales], , DESC )
+    Description = "Expression:
+
+RANKX(ALL(Customers), [£ Total Sales],, DESC)"
+    FormatString = "0"
